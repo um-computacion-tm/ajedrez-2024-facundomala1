@@ -1,0 +1,14 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      -image: cing/python:3.10.1
+    steps:
+      -checkout
+      -run:
+        name: install dependencies
+        command: pip install -r requirements.txt
+      - run:
+        name: run tests
+        command: coverage run -m unittest && coverage xml && coverage report -m
+        
