@@ -7,3 +7,10 @@
 
 ### Fixed
 - Cambios en el codigo config.yml
+
+## [2.0.0] - 2024-08-13
+### Added
+- Se agregaron los archivos "board.py", "chess.py", "cli.py", "piece.py", "rook.py" en la carpeta "game".Tambien se agrego el el archivo "Dockerfile" y ".coveragerc".
+### Changed 
+
+### Fixed 
