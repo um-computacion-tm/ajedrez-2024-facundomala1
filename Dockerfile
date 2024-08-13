@@ -1,12 +1,11 @@
-FROM python:3-slim
+FROM python:3-alpine
 
-WORKDIR /Ajedrez
 
 RUN apk update
-RUN apk add git
+
+RUN apk add --no-cache git
 RUN git clone https://github.com/um-computacion-tm/ajedrez-2024-facundomala1.git
 WORKDIR /ajedrez-2024-facundomala1
-RUN git checkout develop
 RUN pip install -r requirements.txt 
 
 
