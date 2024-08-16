@@ -14,3 +14,9 @@
 ### Changed 
 
 ### Fixed 
+
+## [3.0.0] - 2024-08-15
+### Added
+- Se agrego codigos en el "CHANGELOG.md".
+### Fixed 
+- Arreglos en el codigo de codeclimate.yml.
