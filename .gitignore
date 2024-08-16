@@ -1,4 +1,4 @@
 .coveragerc
-__pycache__/*
-*/__pycache__/*
-chess/*
+__pycache__/
+*/__pycache__/
+chess/
