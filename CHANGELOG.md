@@ -20,3 +20,14 @@
 - Se agrego codigos en el "CHANGELOG.md".
 ### Fixed 
 - Arreglos en el codigo de codeclimate.yml.
+
+## [4.0.0] - 2024-08-18
+### Added 
+
+### Fixed
+
+### Changed 
+- Cambios en el codigo de "rook.py" y "chess.py"
+## [5.0.0] - 2024-08-19
+### Added 
+- Agregue codigo del archivo "tsrook.py"
