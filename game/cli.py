@@ -1,9 +1,9 @@
-from game import Chess
+from chess import Chess
 
 def main():
     chess = chess()
-    while True:
-        play (chess)
+    while chess.is__playing():
+        play(chess)
 
 def play(chess):
     try:
