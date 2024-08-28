@@ -5,9 +5,9 @@ class Piece:
     def get_color(self):
         return self.__color__
 
-    #def get_moves(self, position):
-        #raise NotImplementedError("This method should be overridden by subclasses")
-class Rook:
+    def get_moves(self, position):
+        raise NotImplementedError("This method should be overridden by subclasses")
+class Rook(Piece):
     def __init__(self, color):
         super().__init__(color)
 
@@ -20,7 +20,7 @@ class Rook:
             if i != col:
                 moves.append((row, i))
         return moves
-class Queen:
+class Queen(Piece):
     def __init__(self, color):
         super().__init__(color)
 
