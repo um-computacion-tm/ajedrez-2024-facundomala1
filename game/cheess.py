@@ -1,14 +1,10 @@
 from board import Board
-def main ():
-    chess = Chess ()
-
-
-class Chess:
+class Chess():
     def __init__(self):
         self.board = Board()
         self.__turn__ = "WHITE"
 
-    def move(self,from_row,from_col,to_row,to_col):
+    def move(self, from_row, from_col, to_row, to_col):
         # Validar coordenadas
         piece = self.board.get_piece(from_row, from_col)
         if piece and piece.color == self.__turn__:
@@ -20,11 +16,14 @@ class Chess:
         else:
             print("No es tu turno o no hay pieza en la posición inicial")
 
+    def turn(self):
+        return self.__turn__
+
+    def show_board(self):
+        return str(self.board)  # Corregido para usar self.board
+
     def change_turn(self):
         if self.__turn__ == "WHITE":
             self.__turn__ = "BLACK"
         else:
             self.__turn__ = "WHITE"
-
-if __name__ == "__main__":
-    main()
