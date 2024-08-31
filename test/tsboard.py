@@ -12,14 +12,14 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(
             str(board),
             (
-                "♖      ♖\n"
-                "        \n"
-                "        \n"
-                "        \n"
-                "        \n"
-                "        \n"
-                "        \n"
                 "♜      ♜\n"
+                "        \n"
+                "        \n"
+                "        \n"
+                "        \n"
+                "        \n"
+                "        \n"
+                "♖      ♖\n"
             )
         )
     def test_initial_rook_positions(self):
