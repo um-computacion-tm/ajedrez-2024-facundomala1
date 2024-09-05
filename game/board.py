@@ -1,4 +1,8 @@
 from rook import Rook
+from knight import Knight
+from bishop import Bishop
+from king import King
+from queen import Queen
 class Board:
     def __init__(self):
         self.__positions__ = []
@@ -7,26 +11,19 @@ class Board:
             for _ in range(8):
                 col.append(None)
             self.___positions__.append(col)
-        self.__positions__[0][0] = Rook("BLACK")
-        self.__positions__[0][7] = Rook("BLACK")
-        self.__positions__[7][0] = Rook("WHITE")
-        self.__positions__[7][7] = Rook("WHITE")
-    def __str__(self):
-        board_str = ""
-        for row in self.__positions__:
-            for cell in row:
-                if cell is not None:
-                    if cell.color == "WHITE":
-                        board_str += "♖"
-                    else:
-                        board_str += "♜"
-                else:
-                    board_str += " "
-            board_str += "\n"
-        return board_str
+            
+        self.__positions__[0][0] = Rook("Rook","White")
+        self.__positions__[0][1] = Knight("Knight","White")
+        self.__positions__[0][2] = Bishop("Bishop","White")
+        self.__positions__[0][3] = King("King","White")
+        self.__positions__[0][4] = Queen("Queen","White")
+        self.__positions__[0][5] = Bishop("Bishop","White")
+        self.__positions__[0][6] = Knight("Knight","White")
+        self.__positions__[0][7] = Rook("Rook","White")
+    def set_position(self, from_row, from_col, to_row, to_col):
+        self.__positions__[to_row][to_col] = self.__positions__[from_row][from_col]
+        self.__positions__[from_row][from_col] = None
     def get_piece(self, row, col):
+        if self.__positions__[row][col] is None:
+            return None
         return self.__positions__[row][col]
-
-    def set_piece(self, row, col, piece):
-
-        self.__positions__[row][col] = piece
