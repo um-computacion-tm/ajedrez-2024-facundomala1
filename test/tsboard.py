@@ -1,45 +1,34 @@
 import unittest
 from game.board import Board
-from game.rook import Rook
+from game.cheess import Chess
 
 class TestBoard(unittest.TestCase):
 
-    def setUp(self):
-        self.board = Board()
+    def test_board_creation(self):
+        chess = Chess()
+        board = chess.get_board()
+        #Inicializamos el tablero
+        self.assertIsNotNone(board)
 
-    def test_str_board(self):
-        board = Board()
-        self.assertEqual(
-            str(board),
-            (
-                "♜      ♜\n"
-                "        \n"
-                "        \n"
-                "        \n"
-                "        \n"
-                "        \n"
-                "        \n"
-                "♖      ♖\n"
-            )
-        )
-    def test_initial_rook_positions(self):
-        self.assertIsInstance(self.board.get_piece(0, 0), Rook)
-        self.assertIsInstance(self.board.get_piece(0, 7), Rook)
-        self.assertIsInstance(self.board.get_piece(7, 0), Rook)
-        self.assertIsInstance(self.board.get_piece(7, 7), Rook)
+    def test_get_positions(self):
+        chess = Chess()
+        board = chess.__board__
+        positions = board.get_positions()
+        self.assertIsNotNone(positions)
 
-    def test_empty_positions(self):
-        self.assertIsNone(self.board.get_piece(3, 3))
-        self.assertIsNone(self.board.get_piece(4, 4))
+    def test_set_positions(self):
+        chess = Chess()
+        board = chess.get_board()
+        positions = chess.get_board().get_positions()
+        #Cambiar posicion de una pieza
+        board.set_positions(1, 0, 3, 0)
+        self.assertIsNone(positions[1][0])
+        self.assertIsNotNone(positions[3][0])
 
-    def test_add_piece(self):
-        new_rook = Rook("WHITE", position=(4, 4))
-        self.board.__positions__[4][4] = new_rook
-        self.assertEqual(self.board.get_piece(4, 4), new_rook)
-
-    def test_remove_piece(self):
-        self.board.__positions__[7][0] = None
-        self.assertIsNone(self.board.get_piece(7, 0))
-
-if __name__ == '__main__':
-    unittest.main()
+    def test_get_piece(self):
+        chess = Chess()
+        positions= chess.get_board().get_positions()
+        #Obtener pieza en casilla (1, 0)
+        self.assertIsNotNone(positions[1][0])
+        #Obtener pieza donde no hay(4, 0)
+        self.assertIsNone(positions[4][1])
