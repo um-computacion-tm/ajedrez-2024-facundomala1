@@ -31,9 +31,41 @@
 - Se agregaron las piezas y sus movimientos
 ## [9.0.0] - 2024-08-26
 ### Added
--Agregue un archivo llamado "tscli.py" con su respectivo codigo
+- Agregue un archivo llamado "tscli.py" con su respectivo codigo
 ### Fixed 
--Arregle el codigo de "piece.py"
+- Arregle el codigo de "piece.py"
 ## [9.0.0] - 2024-08-27
 ### Fixed
 - Arreglos en la configuracion del archivo ".circleci"
+## [9.0.0] - 2024-08-28
+### Added
+- test del chess nuevo
+### Fixed 
+- Arreglos en el codigo del "chess"
+
+## [9.0.0] - 2024-08-29
+### Fixed 
+- Arreglos en el codigo de la pieza rook.py
+## [9.0.0] - 2024-08-31
+### Changed
+- Cambios en la modalidad del board y sus test
+## [9.0.0] - 2024-09-01
+### Fixed 
+- Arreglos en el inicio del juego cli.py
+### Added
+- Test piezas
+## [9.0.0] - 2024-09-03
+### Changed 
+- Cambios en la estructura del codigo. Se agrego clase padre piece.py y aparte king.py
+## [9.0.0] - 2024-09-04
+### Changed 
+- Cambios en la estructura del tablero
+## [9.0.0] - 2024-09-05
+### Added 
+- Se agrego codigo al tablero para completarlo
+## [9.0.0] - 2024-09-09
+### Added 
+- Se agrego un codigo para las exepciones.
+### Fixed 
+- Arreglos en la los test del board
+
