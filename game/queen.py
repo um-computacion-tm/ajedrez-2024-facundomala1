@@ -1,4 +1,4 @@
-from game.piece import Piece
+from piece import Piece
 
 class Queen(Piece): 
     __white_str__ = '♕'
