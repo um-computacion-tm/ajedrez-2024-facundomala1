@@ -33,6 +33,8 @@ class Board:
         self.__positions__[7][5] = Bishop("Bishop","Black")
         self.__positions__[7][6] = Knight("Knight","Black")
         self.__positions__[7][7] = Rook("Rook","Black")    
+    def get_position(self, row, col):
+        return self.__positions__[row][col]
     def set_position(self, from_row, from_col, to_row, to_col):
         self.__positions__[to_row][to_col] = self.__positions__[from_row][from_col]
         self.__positions__[from_row][from_col] = None
