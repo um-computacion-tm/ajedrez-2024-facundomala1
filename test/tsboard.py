@@ -1,7 +1,5 @@
 import unittest
-from game.board import Board
 from game.cheess import Chess
-
 class TestBoard(unittest.TestCase):
 
     def test_board_creation(self):
