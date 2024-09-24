@@ -1,19 +1,25 @@
 class InvalidMove(Exception):
+    def __init__(self):
+        super().__init__("Movimieto de pieza es invalido")
 
-    message = "Movimieto de pieza invalido"
-
-    def __str__(self):
-        return self.message
-
-
-
-class InvalidTurn(InvalidMove):
-    message = "No puedes mover pieza de otro jugador"
+class IndexErrorPersonalizada(Exception):
+    def __init__(self):
+        super().__init__("Numero de fila o columna incorrecto. Intentelo de nuevo.")
 
 
+class CasillaOcupada(Exception):
+    def __init__(self):
+        super().__init__("La casilla seleccionada ya está ocupada por otra de tus piezas. Intentelo de nuevo.")
 
-class EmptyPosition(InvalidMove):
-    message = "La posicion esta vacia"
 
-class OutOfBoard(InvalidMove):
-    message = "La posicion indicada se encuentra fuera del tablero"
+class PiezaNoExiste(Exception):
+    def __init__(self):
+        super().__init__("No hay pieza en esa casilla. Intentelo de nuevo.")
+
+class MismaCasilla(Exception):
+    def __init__(self):
+        super().__init__("No puede mover una pieza a su misma casilla. Intentelo de nuevo.")
+
+class ColorIncorrecto(Exception):
+    def __init__(self):
+        super().__init__("La pieza seleccionada no es de tu color. Intentelo de nuevo.")
