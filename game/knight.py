@@ -1,4 +1,4 @@
-from piece import Piece
+from game.piece import Piece
 
 class Knight(Piece):
     __white_str__ = '♘'
