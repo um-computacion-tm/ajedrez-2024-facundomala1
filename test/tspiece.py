@@ -1,22 +1,11 @@
 import unittest
-from game.board import Board
-from game.piece import Piece  # Asegúrate de tener una clase Piece
+from game.piece import Piece
 
 class TestPiece(unittest.TestCase):
-    def setUp(self):
-        self.board = Board()
-        self.piece = Piece("WHITE")  # Ejemplo de inicialización
+    def test_color(self):
+        piece = Piece("Piece","White")
+        self.assertEqual(piece.get_color(), "White")
 
-    def test_piece_color(self):
-        self.assertEqual(self.piece.color, "WHITE")
-
-    def test_valid_move(self):
-        # Añade pruebas para movimientos válido
-        pass
-
-    def test_invalid_move(self):
-        # Añade pruebas para movimientos inválidos
-        pass
-
-if __name__ == '__main__':
-    unittest.main()
+    def test_name(self):
+        piece = Piece("Piece","White")
+        self.assertEqual(piece.get_name(), "Piece")
