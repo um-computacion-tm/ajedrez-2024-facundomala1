@@ -1,6 +1,4 @@
-class InvalidMove(Exception):
-    def __init__(self):
-        super().__init__("Movimieto de pieza es invalido")
+#Excepciones personalizadas
 
 class IndexErrorPersonalizada(Exception):
     def __init__(self):
@@ -23,3 +21,7 @@ class MismaCasilla(Exception):
 class ColorIncorrecto(Exception):
     def __init__(self):
         super().__init__("La pieza seleccionada no es de tu color. Intentelo de nuevo.")
+
+class MovimientoInvalido(Exception):
+    def __init__(self):
+        super().__init__("El movimiento no es válido. Intentelo de nuevo.")
