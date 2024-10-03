@@ -1,6 +1,6 @@
 
-from cheess import Chess
-from exeptions import CasillaOcupada, PiezaNoExiste, MismaCasilla, ColorIncorrecto, InvalidMove, IndexErrorPersonalizada
+from game.cheess import Chess
+from game.exeptions import CasillaOcupada, PiezaNoExiste, MismaCasilla, ColorIncorrecto, InvalidMove, IndexErrorPersonalizada
 import os
 
 class Cliente:
