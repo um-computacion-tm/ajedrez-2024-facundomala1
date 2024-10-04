@@ -1,6 +1,5 @@
 Facundo Mala Ingenieria Informatica UM
 
-
 # Ajedrez-2024-facundomala1
 
 # CircleCI
