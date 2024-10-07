@@ -80,6 +80,10 @@ class TestChess(unittest.TestCase):
         positions[6][3] = Queen("Queen","White")
         chess.move(6, 3, 7, 3)
         self.assertEqual(chess.get_ganador(), "White")
+        
+
+# ------------------------- Tests de Movimientos ---------------------------------
+
 class TestChessMovimientos(unittest.TestCase):
 #Alfil
     #En condiciones iniciales, ningun alfil se puede mover, por los peones
