@@ -1,4 +1,4 @@
-.coveragerc
+.coverage
 __pycache__/
 */__pycache__/
 chess/
