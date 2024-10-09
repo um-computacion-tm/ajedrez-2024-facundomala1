@@ -1,283 +1,108 @@
 import unittest
+from unittest.mock import MagicMock, patch
 from game.cheess import Chess
-from game.queen import Queen
-from game.knight import Knight
-from game.bishop import Bishop
-from game.pawn import Pawn
-from game.king import King
-from game.moves import ReglasDeMovimientos
-
+from game.board import Board
 
 class TestChess(unittest.TestCase):
 
-    def test_get_reglas(self):
-        chess = Chess()
-        self.assertIsNotNone(chess.get_reglas())
+    def setUp(self):
+        self.chess = Chess()
 
-    def test_initial_turn(self):
-        chess = Chess()
-        # Turno inicial debe ser "White"
-        self.assertEqual(chess.__turn__, "White")
+    def setup_move_scenario(self, color, is_valid_move, move_result):
+        self.chess.__board__.get_color = MagicMock(return_value=color)
+        self.chess.__board__.is_valid_move = MagicMock(return_value=is_valid_move)
+        self.chess.__board__.move_piece = MagicMock(return_value=move_result)
 
-    def test_move_to_empty_space(self):
-        chess = Chess()
-        # Mover pieza de (1, 0) to (2, 0)
-        chess.move(1, 0, 2, 0)
-        positions = chess.get_board().get_positions()
-        self.assertIsNotNone(positions[2][0])
-        self.assertIsNone(positions[1][0])
+    def test_init(self):
+        self.assertIsInstance(self.chess.__board__, Board)
+        self.assertEqual(self.chess.__current_player__, "WHITE")
+        self.assertFalse(self.chess.__mutual_agreement_to_end__)
 
+    def test_get_captures(self):
+        self.chess.__board__.get_capture_counts = MagicMock(return_value={"WHITE": 5, "BLACK": 3})
+        captures = self.chess.get_captures()
+        self.assertEqual(captures, {"WHITE": 5, "BLACK": 3})
 
-    def test_move_errors(self):
-        chess = Chess()
-        # Probar mover pieza a casilla ocupada
-        self.assertEqual(chess.move(0, 0, 1, 0), "CasillaOcupada")
-        self.assertEqual(chess.move(3, 3, 4, 4), "PiezaNoExiste")
-        self.assertEqual(chess.move(1, 0, 1, 0), "MismaCasilla")
+    def test_is_over(self):
+        # Test when game is not over
+        self.assertFalse(self.chess.is_over())
 
+        # Test when white captures 15 pieces
+        self.chess.__board__.__white_captures__ = 15
+        self.assertTrue(self.chess.is_over())
 
-    def test_get_turn(self):
-        chess = Chess()
-        self.assertEqual(chess.get_turn(), "White")
-        chess.move(1, 0, 2, 0)
-        self.assertEqual(chess.get_turn(), "Black")
+        # Reset and test when black captures 15 pieces
+        self.chess.__board__.__white_captures__ = 0
+        self.chess.__board__.__black_captures__ = 15
+        self.assertTrue(self.chess.is_over())
 
-    def test_turn_change(self):
-        chess = Chess()
-        #Cambios de turno
-        self.assertEqual(chess.change_turn(), None)
-        chess.move(1, 0, 2, 0)
-        self.assertEqual(chess.change_turn(), None)
+        # Test when king is captured
+        self.chess.__board__.__black_captures__ = 0
+        self.chess.__board__.__king_captured__ = True
+        self.assertTrue(self.chess.is_over())
 
-    def test_wrong_turn(self):
-        chess = Chess()
-        board = chess.get_board()
-        self.assertEqual(chess.move(6, 0, 4, 0), "ColorIncorrecto")
+        # Test mutual agreement
+        self.chess.__board__.__king_captured__ = False
+        self.chess.__mutual_agreement_to_end__ = True
+        self.assertTrue(self.chess.is_over())
 
+    def test_end_game_by_agreement(self):
+        self.chess.end_game_by_agreement()
+        self.assertTrue(self.chess.__mutual_agreement_to_end__)
 
-    def test_habilitar_movimiento(self):
-        chess = Chess()
-        board = chess.get_board()
-        positions = board.get_positions()
-        destination1 = positions[1][0]
-        destination2 = positions[3][0]
-        # Mover una pieza a su misma posicion
-        self.assertEqual(chess.habilitar_movimiento(destination1, 1, 0, 1, 0), "MovimientoInvalido")
-        # Movimiento Valido
-        self.assertEqual(chess.habilitar_movimiento(destination2, 1, 0, 3, 0), "Valido")
-    
-    def test_end_game(self):
-        chess = Chess()
-        board = chess.get_board()
-        positions = board.get_positions()
-        positions[6][3] = Queen("Queen","White")
-        self.assertEqual(chess.move(6, 3, 7, 3), "ReyEliminado")
+    def test_display_board(self):
+        self.chess.__board__.display_board = MagicMock()
+        self.chess.display_board()
+        self.chess.__board__.display_board.assert_called_once()
 
-    def test_get_ganador(self):
-        chess = Chess()
-        positions = chess.get_board().get_positions()
-        self.assertEqual(chess.get_ganador(), None)
-        positions[6][3] = Queen("Queen","White")
-        chess.move(6, 3, 7, 3)
-        self.assertEqual(chess.get_ganador(), "White")
-        
+    def test_play_move_invalid_turn(self):
+        self.chess.__board__.get_color = MagicMock(return_value="BLACK")
+        result = self.chess.play_move("00", "01")
+        self.assertEqual(result, "INVALID_TURN")
 
-# ------------------------- Tests de Movimientos ---------------------------------
+    def test_play_move_valid(self):
+        self.setup_move_scenario("WHITE", True, "NORMAL")
+        result = self.chess.play_move("00", "01")
+        self.assertEqual(result, "VALID")
+        self.assertEqual(self.chess.__current_player__, "BLACK")
 
-class TestChessMovimientos(unittest.TestCase):
-#Alfil
-    #En condiciones iniciales, ningun alfil se puede mover, por los peones
-    def test_movimiento_alfil_initial(self):
-        chess = Chess()
-        board = chess.get_board()
-        positions = board.get_positions()
-        # White Bishop
-        self.assertEqual(chess.analizar_movimiento(positions, 0,2,1,1), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 0,2,1,2), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 0,2,1,3), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 0,2,2,0), "MovimientoInvalido")
-        # Black Bishop
-        self.assertEqual(chess.analizar_movimiento(positions, 7,2,6,1), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 7,2,6,2), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 7,2,6,3), "MovimientoInvalido")
+    def check_play_move_scenario(self, expected_result, is_valid_move=True):
+        self.setup_move_scenario("WHITE", is_valid_move, expected_result)
+        result = self.chess.play_move("00", "01")
+        if expected_result:
+            self.assertEqual(result, expected_result)
+        else:
+            self.assertEqual(result, "INVALID")
 
+    def test_play_move_king_captured(self):
+        self.check_play_move_scenario(("KING_CAPTURED", "info"))
 
-    def test_movimiento_alfil(self):
-        chess = Chess()
-        board = chess.get_board()
-        new_positions = board.get_positions()
-        new_positions[3][3] = Bishop("Bishop","White")
-        self.assertEqual(chess.analizar_movimiento(new_positions, 3,3,2,2), "Valido")
-        self.assertEqual(chess.analizar_movimiento(new_positions, 3,3,2,4), "Valido")
-        self.assertEqual(chess.analizar_movimiento(new_positions, 3,3,4,2), "Valido")
-        self.assertEqual(chess.analizar_movimiento(new_positions, 3,3,4,4), "Valido")
-        self.assertEqual(chess.analizar_movimiento(new_positions, 3,3,5,5), "Valido")
+    def test_play_move_promotion_needed(self):
+        self.check_play_move_scenario(("PROMOTION_NEEDED", "info"))
 
-#Torre
+    def test_play_move_invalid_capture(self):
+        self.check_play_move_scenario("INVALID_CAPTURE")
 
-    # Evaluamos cada posible tipo de movimiento
-    def test_movimiento_torre_initial(self):
+    def test_play_move_invalid(self):
+        self.check_play_move_scenario(None, is_valid_move=False)
 
-        #Ninguna torre se puede mover inicialmente, por los peones
-        chess = Chess()
-        board = chess.get_board()
-        positions = board.get_positions()
+    def test_promote_pawn(self):
+        self.chess.__board__.handle_pawn_promotion = MagicMock(return_value="QUEEN")
+        result = self.chess.promote_pawn(0, 0, "QUEEN")
+        self.assertEqual(result, "QUEEN")
+        self.assertEqual(self.chess.__current_player__, "BLACK")
 
-        #Movimiento Inicial Vertical
-        self.assertEqual(chess.analizar_movimiento(positions, 0, 0, 1, 0), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 0, 7, 1, 7), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 7, 0, 0, 7), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 7, 7, 0, 0), "MovimientoInvalido")
-        #Movimiento Inicial Horizontal
-        self.assertEqual(chess.analizar_movimiento(positions, 0, 0, 0, 1), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 7, 7, 7, 1), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 0, 7, 0, 1), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 7, 0, 7, 1), "MovimientoInvalido")
-    
-    def test_movimiento_torre(self):
-        chess = Chess()
-        board = chess.get_board()
-        positions = board.get_positions()
-        self.assertEqual(chess.analizar_movimiento(positions, 0, 0, 1, 0), "MovimientoInvalido")
-        #Elimino el peon de enfrente a la torre superior izquierda
-        positions[1][0] = None
-        self.assertEqual(chess.analizar_movimiento(positions, 0, 0, 2, 0), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 0, 0, 7, 0), "MovimientoInvalido")
-        #Muevo la torre para evaluar movimientos horizontales
-        chess.move(0,0,2,0)
-        self.assertEqual(chess.analizar_movimiento(positions, 2, 0, 2, 7), "Valido")
+    def test_parse_move(self):
+        fila, columna = self.chess.parse_move("12")
+        self.assertEqual(fila, 1)
+        self.assertEqual(columna, 2)
 
-#Caballo
-    
-    # Movimientos del caballo en posicion incial
-    def test_movimiento_caballo_initial(self):
-        chess = Chess()
-        board = chess.get_board()
-        positions = board.get_positions()
-        self.assertEqual(chess.analizar_movimiento(positions, 0,1,2,0), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 0,1,2,2), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 0,1,1,3), "MovimientoInvalido")
-
-    def test_movimiento_caballo(self):
-        chess = Chess()
-        board = chess.get_board()
-        positions = board.get_positions()
-        positions[4][4] = Knight("Knight","White")
-        #Inserto un caballo en el medio del tablero para evaluar sus movimientos
-        self.assertEqual(chess.analizar_movimiento(positions, 4,4,3,6), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4,4,3,2), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4,4,2,5), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4,4,2,3), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4,4,5,6), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4,4,5,2), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4,4,6,5), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4,4,6,3), "Valido")
-
-        #Movimientos Invalidos: Movimiento en linea recta
-        self.assertEqual(chess.analizar_movimiento(positions, 4,4,4,7), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4,4,7,4), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4,4,1,4), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4,4,7,4), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4,4,4,0), "MovimientoInvalido")
-    
-
-#Rey
+    def test_switch_turn(self):
+        self.chess.switch_turn()
+        self.assertEqual(self.chess.__current_player__, "BLACK")
+        self.chess.switch_turn()
+        self.assertEqual(self.chess.__current_player__, "WHITE")
 
 
-    def test_movimiento_king_initial(self):
-        chess = Chess()
-        board = chess.get_board()
-        positions = board.get_positions()
-        self.assertEqual(chess.analizar_movimiento(positions, 0, 3, 0, 2), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 0, 3, 1, 2), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 0, 3, 1, 3), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 0, 3, 1, 4), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 0, 3, 0, 5), "MovimientoInvalido")
-
-    def test_movimiento_king(self):
-        chess = Chess()
-        board = chess.get_board()
-        positions = board.get_positions()
-        positions[4][4] = King("King","White")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 3, 3), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 3, 4), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 3, 5), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 4, 5), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 5, 5), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 5, 4), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 5, 3), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 4, 3), "Valido")
-        # Salteando una casilla de por medio
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 2, 3), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 2, 4), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 2, 5), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 4, 6), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 6, 5), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 6, 4), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 6, 3), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 4, 2), "MovimientoInvalido")
-        
-
-#Reina
-
-    def test_movimiento_queen(self):
-        chess = Chess()
-        board = chess.get_board()
-        positions = board.get_positions()
-        positions[4][4] = Queen("Queen","White")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 4, 2), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 3, 2), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 2, 2), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 2, 3), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 2, 5), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 2, 6), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 3, 6), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 4, 4, 4, 6), "Valido")
-        
-
-    def test_comer_piezas(self):
-        chess = Chess()
-        board = chess.get_board()
-        positions = board.get_positions()
-        positions[6][0] = Queen("Queen","White")
-        #En diagonal
-        self.assertEqual(chess.analizar_movimiento(positions, 6,0,7,1), "Valido")
-        #Horizontal
-        self.assertEqual(chess.analizar_movimiento(positions, 6,0,6,1), "Valido")
-        #Vertical
-        self.assertEqual(chess.analizar_movimiento(positions, 6,0,7,0), "Valido")
-
-        
-
-#Peon
-
-    def test_movimiento_peon_initial_1_space(self):
-        chess = Chess()
-        board = chess.get_board()
-        positions = board.get_positions()
-        self.assertEqual(chess.analizar_movimiento(positions, 1,0,2,0), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 1,0,2,1), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 1,0,2,2), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 1,0,1,1), "MovimientoInvalido")
-
-    def test_movimiento_peon_initial_2_spaces(self):
-        chess = Chess()
-        board = chess.get_board()
-        positions = board.get_positions()
-        self.assertEqual(chess.analizar_movimiento(positions, 1,0,3,0), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 1,1,3,1), "Valido")
-        chess.change_turn()
-        self.assertEqual(chess.analizar_movimiento(positions, 6,0,4,0), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 6,1,4,1), "Valido")
-
-    def test_movimiento_comer_otra_pieza(self):
-        chess = Chess()
-        board = chess.get_board()
-        positions = board.get_positions()
-        positions[5][2] = Pawn("Pawn","White")
-        positions[6][3] = Pawn("Pawn","White")
-        positions[6][1] = Pawn("Pawn","Black")
-        positions[6][2] = Pawn("Pawn","Black")
-        self.assertEqual(chess.analizar_movimiento(positions, 5,2,6,3), "MovimientoInvalido")
-        self.assertEqual(chess.analizar_movimiento(positions, 5,2,6,1), "Valido")
-        self.assertEqual(chess.analizar_movimiento(positions, 5,2,6,2), "MovimientoInvalido")
+if __name__ == "__main__":
+    unittest.main()
