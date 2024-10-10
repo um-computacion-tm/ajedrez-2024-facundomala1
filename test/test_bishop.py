@@ -1,6 +1,6 @@
 import unittest
 from game.bishop import Bishop
-from .test_move import TestUtils
+from test.test_move import TestUtils
 
 class TestBishop(unittest.TestCase):
 

@@ -1,6 +1,6 @@
 import unittest
 from game.rook import Rook
-from .test_move import TestUtils
+from test.test_move import TestUtils
 
 class TestRook(unittest.TestCase):
 

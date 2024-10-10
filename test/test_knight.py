@@ -1,57 +1,40 @@
 import unittest
-from game.pawn import Pawn
-from .test_move import TestUtils
+from game.knight import Knight
 
-class TestPawn(unittest.TestCase):
+class TestKnight(unittest.TestCase):
 
     def setUp(self):
-        self.white_pawn = Pawn("WHITE")
-        self.black_pawn = Pawn("BLACK")
-
-    def test_pawn_str(self):
-        utils = TestUtils()
-        utils.check_piece_str(self, Pawn, "♙", "♟")
+        self.knight = Knight("WHITE")  # Crea un objeto Knight blanco para usar en las pruebas
 
     def test_init(self):
-        self.assertIsInstance(self.white_pawn, Pawn)
-        self.assertEqual(self.white_pawn.__color__, "WHITE")
-        self.assertTrue(self.white_pawn.__first_move__)
+        # Crea un objeto Knight de color blanco
+        white_knight = Knight("WHITE")
+        # Verifica que se ha inicializado correctamente como un objeto Knight
+        self.assertEqual(white_knight.__color__, "WHITE")
+        self.assertEqual(str(white_knight), "♘")  # Verifica la representación del caballo blanco
+        
+        # Crea un objeto Knight de color negro
+        black_knight = Knight("BLACK")
+        # Verifica que se ha inicializado correctamente como un objeto Knight
+        self.assertEqual(black_knight.__color__, "BLACK")
+        self.assertEqual(str(black_knight), "♞")  # Verifica la representación del caballo negro
 
-        self.assertIsInstance(self.black_pawn, Pawn)
-        self.assertEqual(self.black_pawn.__color__, "BLACK")
-        self.assertTrue(self.black_pawn.__first_move__)
+    
+    def test_valid_movement(self):
+        white_knight = Knight("WHITE")
+        # Movimientos válidos en forma de L
+        self.assertTrue(white_knight.is_valid_movement(0, 1, 2, 0))  # Dos casillas verticales y una horizontal
+        self.assertTrue(white_knight.is_valid_movement(0, 1, 2, 0))  # (0, 1) a (2, 0)
+        self.assertTrue(white_knight.is_valid_movement(0, 1, 2, 2))  # (0, 1) a (2, 2)
+        self.assertTrue(white_knight.is_valid_movement(0, 1, 1, 3))  # (0, 1) a (1, 3)
 
-    def test_is_valid_movement(self):
-        self._test_pawn_movement(self.black_pawn, 1, 2, 3, 0)
+    def test_invalid_movement(self):
+        # Movimientos inválidos que no forman una "L"
+        self.assertFalse(self.knight.is_valid_movement(0, 3, 0, 1))  # Movimiento inválido
 
-    def _test_pawn_movement(self, pawn, start_row, one_step, two_step, back_step):
-        # Primer movimiento
-        self.assertTrue(pawn.is_valid_movement(start_row, 0, one_step, 0))  # Un paso adelante
-        self.assertTrue(pawn.is_valid_movement(start_row, 0, two_step, 0))  # Dos pasos adelante
-        self.assertFalse(pawn.is_valid_movement(start_row, 0, two_step + 1, 0))  # Tres pasos adelante (inválido)
 
-        # Movimiento diagonal (captura)
-        self.assertTrue(pawn.is_valid_movement(start_row, 0, one_step, 1, is_capture=True))  # Captura a la derecha
-        self.assertTrue(pawn.is_valid_movement(start_row, 1, one_step, 0, is_capture=True))  # Captura a la izquierda
-        self.assertFalse(pawn.is_valid_movement(start_row, 0, one_step, 1, is_capture=False))  # Diagonal sin captura (inválido)
 
-        # Movimientos inválidos
-        self.assertFalse(pawn.is_valid_movement(start_row, 0, start_row, 1))  # Movimiento lateral
-        self.assertFalse(pawn.is_valid_movement(start_row, 0, back_step, 0))  # Movimiento hacia atrás
 
-        # Después del primer movimiento
-        pawn.complete_move()
-        self.assertTrue(pawn.is_valid_movement(one_step, 0, two_step, 0))  # Un paso adelante
-        self.assertFalse(pawn.is_valid_movement(one_step, 0, two_step + 1, 0))  # Dos pasos adelante (ya no válido)
 
-    def test_complete_move(self):
-        self.assertTrue(self.white_pawn.__first_move__)
-        self.white_pawn.complete_move()
-        self.assertFalse(self.white_pawn.__first_move__)
-
-        self.assertTrue(self.black_pawn.__first_move__)
-        self.black_pawn.complete_move()
-        self.assertFalse(self.black_pawn.__first_move__)
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

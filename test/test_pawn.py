@@ -1,6 +1,6 @@
 import unittest
 from game.pawn import Pawn
-from .test_move import TestUtils
+from test.test_move import TestUtils
 
 class TestPawn(unittest.TestCase):
 
