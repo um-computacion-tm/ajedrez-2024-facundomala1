@@ -1,5 +1,5 @@
 import unittest
-from game.queen import Queen  # Asegúrate de importar correctamente tu clase Queen
+from game.queen import Queen
 
 class TestQueen(unittest.TestCase):
     

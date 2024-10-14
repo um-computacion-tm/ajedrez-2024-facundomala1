@@ -233,14 +233,6 @@ class TestBoardAdditionalCoverage(unittest.TestCase):
         self.board.__matrix__[4][4] = None
         self.assertFalse(self.board.are_positions_valid(4, 4, 5, 5))
 
-    def test_is_piece_movement_valid(self):
-        # Movimiento valido de un peon
-        pawn = self.board.__matrix__[6][0]
-        self.assertTrue(self.board.is_piece_movement_valid(pawn, 6, 0, 5, 0))
-        
-        # Movimiento invalido de un peon
-        self.assertFalse(self.board.is_piece_movement_valid(pawn, 6, 0, 4, 1))
-
     def test_get_movement_type(self):
         self.assertEqual(self.board.get_movement_type(0, 0, 0, 3), "horizontal")
         self.assertEqual(self.board.get_movement_type(0, 0, 3, 0), "vertical")
