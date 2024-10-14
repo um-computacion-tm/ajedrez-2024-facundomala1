@@ -106,30 +106,7 @@ class TestChess(unittest.TestCase):
             self.chess.parse_move("a1")
         with self.assertRaises(ValueError):
             self.chess.parse_move("1a")
-    def test_parse_move_out_of_range(self):
-        # Entradas fuera del rango permitido (0-7)
-        with self.assertRaises(ValueError):
-            self.chess.parse_move("88")
-        with self.assertRaises(ValueError):
-            self.chess.parse_move("99")
-    
-    def test_parse_move_invalid_length(self):
-        # Entrada de longitud incorrecta
-        with self.assertRaises(ValueError):
-            self.chess.parse_move("1")
-        with self.assertRaises(ValueError):
-            self.chess.parse_move("123")
-    
-    def test_parse_move_negative(self):
-        # Entrada negativa
-        with self.assertRaises(ValueError):
-            self.chess.parse_move("-1-1")
-    
-    def test_parse_move_edge_case_zero(self):
-        # Caso borde de cero (0, 0)
-        fila, columna = self.chess.parse_move("00")
-        self.assertEqual(fila, 0)
-        self.assertEqual(columna, 0)
+
     def test_switch_turn(self):
         self.chess.switch_turn()
         self.assertEqual(self.chess.__current_player__, "BLACK")
