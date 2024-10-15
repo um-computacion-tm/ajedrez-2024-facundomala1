@@ -1,99 +1,90 @@
-from board import Board
-from moves import ReglasDeMovimientos
-
+from game.board import Board
 class Chess:
     def __init__(self):
-        self.__board__ = Board()
-        self.__turn__ = "White"
-        self.__ganador__ = None
-        self.__reglas__ = ReglasDeMovimientos()
+        self.__tablero__ = Board() # Creo objeto __board__
+        self.__current_player__ = "WHITE" # Inicializo el primer jugador en blanco
+        self.__mutual_agreement_to_end__ = False 
+
     
-    def move(self, from_row, from_col, to_row, to_col):
+    def get_captures(self):
+        return self.__tablero__.get_capture_counts()
 
-        mensaje = ""
 
-        origin_piece = self.__board__.get_piece(from_row, from_col)
-        destination = self.__board__.get_piece(to_row, to_col)
+    def is_over(self):
+        # Un jugador se queda sin piezas (15 capturas, excluyendo el rey)
+        if self.__tablero__.__white_captures__ == 15 or self.__tablero__.__black_captures__ == 15:
+            return True
         
-        if origin_piece is None:
-            mensaje = "PiezaNoExiste"
-
-        elif origin_piece.get_color() != self.__turn__:
-            mensaje = "ColorIncorrecto"
+        # El rey ha sido capturado
+        if self.__tablero__.__king_captured__:
+            return True
         
-        elif from_row == to_row and from_col == to_col:
-            mensaje = "MismaCasilla"
-
-        elif destination is not None and destination.get_color() == self.__turn__:
-            mensaje = "CasillaOcupada" 
-            
-        if mensaje != "":
-            return(mensaje)
+        # Los jugadores deciden terminar la partida de mutuo acuerdo
+        if self.__mutual_agreement_to_end__:
+            return True
         
+        return False
+
+    # Cambia el estado de __mutual_agreement_to_end__
+    def end_game_by_agreement(self):
+        self.__mutual_agreement_to_end__ = True
+
+
+    def display_board(self):
+        self.__tablero__.display_board()
+
+
+
+    def play_move(self, piece, move):
+        p_fila, p_columna = self.parse_move(piece)
+        m_fila, m_columna = self.parse_move(move)
+        piece_color = self.__tablero__.get_color(p_fila, p_columna)
         
-        return(self.habilitar_movimiento(destination, from_row, from_col, to_row, to_col))
-            
-    def habilitar_movimiento(self, destination, from_row, from_col, to_row, to_col):
-            
-        validar = self.analizar_movimiento(self.__board__.get_positions(), from_row, from_col, to_row, to_col)
-        if validar == "MovimientoInvalido":
-            return "MovimientoInvalido"
+        result = "INVALID"
+        info = None
 
-        if destination != None and destination.get_name() == "King" and destination.get_color() != self.__turn__:
-            self.__ganador__ = self.__turn__
-            return "ReyEliminado"
-        
-        self.__board__.set_positions(from_row, from_col, to_row, to_col)
-        self.change_turn()    
-        return "Valido"
+        if piece_color == self.__current_player__:
+            if self.__tablero__.is_valid_move(p_fila, p_columna, m_fila, m_columna):
+                move_result = self.__tablero__.move_piece(p_fila, p_columna, m_fila, m_columna)
+                
+                if isinstance(move_result, tuple):
+                    result, info = move_result
+                else:
+                    result = move_result
 
-    def get_reglas(self):
-        return self.__reglas__
-
-    # Funcion para cambiar el turno de la partida, cada vez que se valide un movimiento. Cambia al turno contrario.
-    def change_turn(self):
-        if self.__turn__ == "White":
-            self.__turn__ = "Black"
+                if result == "NORMAL":
+                    self.switch_turn()
+                    result = "VALID"
+            else:
+                result = "INVALID"
         else:
-            self.__turn__ = "White"
+            result = "INVALID_TURN"
 
-    def get_board(self):
-        return self.__board__
-    
-    def get_turn(self):
-        return self.__turn__
+        return (result, info) if info is not None else result
 
-    def get_ganador(self):
-        return self.__ganador__
+    def promote_pawn(self, fila, columna, choice):
+        promoted_piece = self.__tablero__.handle_pawn_promotion(fila, columna, choice)
+        self.switch_turn()
+        return promoted_piece
 
-    # Determinamos si el movimiento cumple con las reglas de la pieza a mover
-    def analizar_movimiento(self, positions, from_row, from_col, to_row, to_col):
-        nombre_pieza = positions[from_row][from_col].get_name()
-        reglas = self.__reglas__
 
-        # Movimiento Rook
-        if nombre_pieza == "Rook":
-            validacion = reglas.mover_perpendicularmente(positions, from_row, from_col, to_row, to_col)
 
-        # Movimiento knight
-        elif nombre_pieza == "Knight":
-            validacion = reglas.mover_caballo(positions, from_row, from_col, to_row, to_col)
-
-        # Movimiento Bishop
-        elif nombre_pieza == "Bishop":
-            validacion = reglas.mover_diagonalmente(positions, from_row, from_col, to_row, to_col)
-
-        # Movimiento Queen
-        elif nombre_pieza == "Queen":
-            validacion = reglas.mover_reina(positions, from_row, from_col, to_row, to_col)
+    def parse_move(self, move):
+        if len(move) != 2:
+            raise ValueError("Invalid input. Please enter two digits together (e.g., '62' for row 6, column 2).")
         
-        # Movimiento King
-        elif nombre_pieza == "King":
-            validacion = reglas.mover_rey(positions, from_row, from_col, to_row, to_col)
-        
-        # Movimiento Pawn
-        elif nombre_pieza == "Pawn":
-            validacion = reglas.mover_peon(positions, from_row, from_col, to_row, to_col)
-        
-        # Puede ser "Valido" o "MovimientoInvalido"
-        return validacion
+        try:
+            row = int(move[0])
+            col = int(move[1])
+            
+            if 0 <= row <= 7 and 0 <= col <= 7:
+                return row, col
+            else:
+                raise ValueError("Coordinates must be between 0 and 7.")
+        except ValueError:
+            raise ValueError("Please enter only numbers for coordinates.")
+
+
+    # Cambio de turno
+    def switch_turn(self):
+        self.__current_player__ = "BLACK" if self.__current_player__ == "WHITE" else "WHITE"
