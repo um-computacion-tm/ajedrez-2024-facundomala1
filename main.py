@@ -71,6 +71,7 @@ def handle_pawn_promotion(info, chess):
 
 def handle_view_score(chess):
     captures = chess.get_captures()
+    print(f"Captures Data: {captures}")
     print(f"\nWhite captures: {captures['__white_captures__']}")
     print(f"\nBlack captures: {captures['__black_captures__']}")
 
@@ -92,22 +93,33 @@ def display_game_result(chess):
         captures = chess.get_captures()
         winner = "WHITE" if captures['__white_captures__'] == 15 else "BLACK"
         print(f"{winner} has won by capturing all opponent's pieces.")
+def get_user_choice():
+    while True:
+        try:
+            choice = int(input("Enter your choice (1-4): "))
+            if choice in [1, 2, 3, 4]:
+                return choice
+            else:
+                print("Invalid choice. Please enter a number between 1 and 4.")
+        except ValueError:
+            print("Invalid input. Please enter a number between 1 and 4.")
+
 
 def main():
     chess = Chess()
     while not chess.is_over():
         display_game_status(chess)
         display_menu()
-        choice = input("Enter your choice (1-4): ")
+        choice = get_user_choice()  # Esto devuelve un entero
 
-        if choice == '1':
+        if choice == 1:
             handle_move(chess)
-        elif choice == '2':
+        elif choice == 2:
             handle_view_score(chess)
-        elif choice == '3':
+        elif choice == 3:
             if handle_end_game_agreement(chess):
                 break
-        elif choice == '4':
+        elif choice == 4:
             print("Quitting the game.")
             return
         else:
@@ -115,6 +127,7 @@ def main():
 
     if chess.is_over():
         display_game_result(chess)
+
 
 if __name__ == "__main__":
     main()

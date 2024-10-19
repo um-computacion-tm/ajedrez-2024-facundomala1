@@ -73,10 +73,9 @@ class TestBoardPathClear(unittest.TestCase):
                 with self.subTest(f"{direction} from ({start_row},{start_col}) to ({end_row},{end_col})"):
                     self.board.__matrix__[block_row][block_col] = Pawn("BLACK")
                     self.assertFalse(self.board.is_path_clear(start_row, start_col, end_row, end_col, direction))
-    
+
     def test_is_path_clear_invalid_movement(self):
         self.assertFalse(self.board.is_path_clear(0, 0, 2, 1, "invalid"))
-    
 
 class TestBoardDisplay(unittest.TestCase):
     def setUp(self):
