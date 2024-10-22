@@ -13,8 +13,9 @@ Facundo Mala Ingenieria Informatica UM
 
 ## How to Play Using Docker
 ### Prerequisites
-. You need to have Docker installed.
-. Steps to Run the Game in Docker.
+- You need to have Docker installed.
+
+- Steps to Run the Game in Docker.
 
 Clone the repository:
 
