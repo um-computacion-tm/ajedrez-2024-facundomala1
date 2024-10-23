@@ -22,12 +22,15 @@ Clone the repository:
 git clone https://github.com/um-computacion-tm/ajedrez-2024-facundomala1.git
 
 -Build docker image:
+
 docker buildx build -t game-chess .
 
 -Run the game:
+
 docker run -it --name prueba game-chess
 
--Test(el primero es solo test y el segundo es cocatenado con la imagen):
+-Test(el primero es solo test y el segundo es concatenado con la imagen):
+
 docker run -it game-chess
 
 
