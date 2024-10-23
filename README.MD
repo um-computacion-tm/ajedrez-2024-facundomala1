@@ -27,5 +27,8 @@ docker buildx build -t game-chess .
 -Run the game:
 docker run -it --name prueba game-chess
 
--Test:
-coverage run -m unittest && coverage report -m && python -m main
+-Test(el primero es solo test y el segundo es cocatenado con la imagen):
+docker run -it game-chess
+
+
+docker run -it game-chess coverage run -m unittest && coverage report
